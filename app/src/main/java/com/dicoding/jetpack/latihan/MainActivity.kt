@@ -60,14 +60,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun visible() {
+    fun visible() {
         btnCalculateVolume.visibility = View.VISIBLE
         btnCalculateCircumference.visibility = View.VISIBLE
         btnCalculateSurfaceArea.visibility = View.VISIBLE
         btnSave.visibility = View.GONE
     }
 
-    private fun gone() {
+    fun gone() {
         btnCalculateVolume.visibility = View.GONE
         btnCalculateCircumference.visibility = View.GONE
         btnCalculateSurfaceArea.visibility = View.GONE
