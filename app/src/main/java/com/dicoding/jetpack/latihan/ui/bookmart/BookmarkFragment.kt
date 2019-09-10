@@ -6,12 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.jetpack.latihan.R
 import com.dicoding.jetpack.latihan.data.CourseEntity
 import com.dicoding.jetpack.latihan.ui.bookmart.adapter.BookmarkAdapter
 import com.dicoding.jetpack.latihan.ui.bookmart.view.BookmarkFragmentCallback
-import com.dicoding.jetpack.latihan.utils.DataDummy.generateDummyCourses
+import com.dicoding.jetpack.latihan.ui.bookmart.viewmodel.BookmarkViewModel
 import kotlinx.android.synthetic.main.fragment_bookmark.*
 
 class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
@@ -22,6 +23,7 @@ class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
         }
     }
 
+    private var bookmarkViewModel: BookmarkViewModel? = null
     private var bookmarkAdapter: BookmarkAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -32,7 +34,9 @@ class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
         super.onActivityCreated(savedInstanceState)
 
         if (activity != null) {
-            bookmarkAdapter = BookmarkAdapter(activity, this, generateDummyCourses())
+            bookmarkViewModel = ViewModelProviders.of(this).get(BookmarkViewModel::class.java)
+
+            bookmarkAdapter = bookmarkViewModel?.getBookmarks()?.let { BookmarkAdapter(activity, this, it) }
             rvBookmark.layoutManager = LinearLayoutManager(activity)
             rvBookmark.setHasFixedSize(true)
             rvBookmark.adapter = bookmarkAdapter

@@ -6,4 +6,6 @@ data class ModuleEntity(
     var mTitle: String? = null,
     var mPosition: Int? = null,
     var mRead: Boolean? = false
-)
+) {
+    var contentEntity: ContentEntity? = null
+}

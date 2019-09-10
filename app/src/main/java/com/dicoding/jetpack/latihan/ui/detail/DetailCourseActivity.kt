@@ -3,15 +3,16 @@ package com.dicoding.jetpack.latihan.ui.detail
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.dicoding.jetpack.latihan.R
+import com.dicoding.jetpack.latihan.data.CourseEntity
 import com.dicoding.jetpack.latihan.ui.detail.adapter.DetailCourseAdapter
+import com.dicoding.jetpack.latihan.ui.detail.viewmodel.DetailCourseViewModel
 import com.dicoding.jetpack.latihan.ui.reader.CourseReaderActivity
-import com.dicoding.jetpack.latihan.utils.DataDummy.generateDummyModules
-import com.dicoding.jetpack.latihan.utils.DataDummy.getCourse
 import kotlinx.android.synthetic.main.activity_detail_course.*
 import kotlinx.android.synthetic.main.content_detail_course.*
 
@@ -21,6 +22,7 @@ class DetailCourseActivity : AppCompatActivity() {
         const val EXTRA_COURSE = "extra_course"
     }
 
+    private var detailCourseViewModel: DetailCourseViewModel? = null
     private var detailCourseAdapter: DetailCourseAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,14 +32,21 @@ class DetailCourseActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        detailCourseViewModel = ViewModelProviders.of(this).get(DetailCourseViewModel()::class.java)
+
         val extras = intent.extras
         if (extras != null) {
             val courseId = extras.getString(EXTRA_COURSE)
             if (courseId != null) {
-                detailCourseAdapter = DetailCourseAdapter(generateDummyModules(courseId))
+                detailCourseViewModel?.courseId = courseId
+                detailCourseAdapter = detailCourseViewModel?.getModules()?.let { DetailCourseAdapter(it) }
 
-                populateCourse(courseId)
+                //populateCourse(courseId)
             }
+        }
+
+        if (detailCourseViewModel?.getCourse() != null) {
+            populateCourse(detailCourseViewModel?.getCourse())
         }
 
         rvModule.isNestedScrollingEnabled = false
@@ -48,7 +57,24 @@ class DetailCourseActivity : AppCompatActivity() {
         rvModule.addItemDecoration(dividerItemDecoration)
     }
 
-    private fun populateCourse(courseId: String) {
+    private fun populateCourse(course: CourseEntity?) {
+        textTitle.text = course?.title
+        textDescription.text = course?.description
+        textDate.text = String.format("Deadline %s", course?.deadline)
+
+        Glide.with(applicationContext)
+                .load(course?.imagePath)
+                .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
+                .into(imagePoster)
+
+        btnStart.setOnClickListener {
+            val intent = Intent(this, CourseReaderActivity::class.java)
+            intent.putExtra(CourseReaderActivity.EXTRA_COURSE_ID, detailCourseViewModel?.courseId)
+            it.context.startActivity(intent)
+        }
+    }
+
+    /*private fun populateCourse(courseId: String) {
         val courseEntity = getCourse(courseId)
         textTitle.text = courseEntity?.title
         textDescription.text = courseEntity?.description
@@ -64,5 +90,5 @@ class DetailCourseActivity : AppCompatActivity() {
             intent.putExtra(CourseReaderActivity.EXTRA_COURSE_ID, courseId)
             it.context.startActivity(intent)
         }
-    }
+    }*/
 }

@@ -4,10 +4,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.ViewModelProviders
 import com.dicoding.jetpack.latihan.R
 import com.dicoding.jetpack.latihan.ui.reader.content.ModuleContentFragment
 import com.dicoding.jetpack.latihan.ui.reader.list.ModuleListFragment
 import com.dicoding.jetpack.latihan.ui.reader.view.CourseReaderCallback
+import com.dicoding.jetpack.latihan.ui.reader.viewmodel.CourseReaderViewModel
 
 class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
 
@@ -15,14 +17,19 @@ class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
         const val EXTRA_COURSE_ID = "extra_course_id"
     }
 
+    private var courseReaderViewModel: CourseReaderViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_course_reader)
+
+        courseReaderViewModel = ViewModelProviders.of(this).get(CourseReaderViewModel::class.java)
 
         val bundle = intent.extras
         if (bundle != null) {
             val courseId = bundle.getString(EXTRA_COURSE_ID)
             if (courseId != null) {
+                courseReaderViewModel?.courseId = courseId
                 populateFragment()
             }
         }

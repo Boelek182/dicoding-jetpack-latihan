@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.jetpack.latihan.R
@@ -14,7 +15,7 @@ import com.dicoding.jetpack.latihan.ui.reader.CourseReaderActivity
 import com.dicoding.jetpack.latihan.ui.reader.list.adapter.ModuleListAdapter
 import com.dicoding.jetpack.latihan.ui.reader.list.view.MyAdapterClickListener
 import com.dicoding.jetpack.latihan.ui.reader.view.CourseReaderCallback
-import com.dicoding.jetpack.latihan.utils.DataDummy.generateDummyModules
+import com.dicoding.jetpack.latihan.ui.reader.viewmodel.CourseReaderViewModel
 import kotlinx.android.synthetic.main.fragment_module_list.*
 
 class ModuleListFragment : Fragment(), MyAdapterClickListener {
@@ -26,6 +27,7 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
         }
     }
 
+    private var courseReaderViewModel: CourseReaderViewModel? = null
     private var moduleListAdapter: ModuleListAdapter? = null
     private var courseReaderCallback: CourseReaderCallback? = null
 
@@ -43,13 +45,14 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
         super.onActivityCreated(savedInstanceState)
 
         if (activity != null) {
-            populateRecyclerView(generateDummyModules("a14"))
+            courseReaderViewModel = ViewModelProviders.of(activity!!).get(CourseReaderViewModel::class.java)
+            populateRecyclerView(courseReaderViewModel?.getModules())
         }
     }
 
-    private fun populateRecyclerView(generateDummyModules: ArrayList<ModuleEntity>) {
+    private fun populateRecyclerView(generateDummyModules: MutableList<ModuleEntity>?) {
         progressBarModuleList.visibility = View.GONE
-        moduleListAdapter = ModuleListAdapter(this, generateDummyModules)
+        moduleListAdapter = generateDummyModules?.let { ModuleListAdapter(this, it) }
 
         rvModuleList.layoutManager = LinearLayoutManager(context)
         rvModuleList.setHasFixedSize(true)
@@ -60,5 +63,6 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
 
     override fun onItemClicked(position: Int, moduleId: String?) {
         courseReaderCallback?.moveTo(position, moduleId)
+        courseReaderViewModel?.moduleId = moduleId
     }
 }
