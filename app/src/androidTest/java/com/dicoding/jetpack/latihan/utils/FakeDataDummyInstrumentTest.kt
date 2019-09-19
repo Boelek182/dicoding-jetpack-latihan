@@ -3,7 +3,7 @@ package com.dicoding.jetpack.latihan.utils
 import com.dicoding.jetpack.latihan.data.CourseEntity
 import com.dicoding.jetpack.latihan.data.ModuleEntity
 
-object FakeDataDummy {
+object FakeDataDummyInstrumentTest {
 
     fun generateDummyCourses(): ArrayList<CourseEntity> {
         val courses: ArrayList<CourseEntity> = ArrayList()

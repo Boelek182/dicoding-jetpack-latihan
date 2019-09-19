@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +17,9 @@ import com.dicoding.jetpack.latihan.ui.reader.list.adapter.ModuleListAdapter
 import com.dicoding.jetpack.latihan.ui.reader.list.view.MyAdapterClickListener
 import com.dicoding.jetpack.latihan.ui.reader.view.CourseReaderCallback
 import com.dicoding.jetpack.latihan.ui.reader.viewmodel.CourseReaderViewModel
+import com.dicoding.jetpack.latihan.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_module_list.*
+
 
 class ModuleListFragment : Fragment(), MyAdapterClickListener {
 
@@ -45,7 +48,7 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
         super.onActivityCreated(savedInstanceState)
 
         if (activity != null) {
-            courseReaderViewModel = ViewModelProviders.of(activity!!).get(CourseReaderViewModel::class.java)
+            courseReaderViewModel = obtainViewModel(activity)
             populateRecyclerView(courseReaderViewModel?.getModules())
         }
     }
@@ -64,5 +67,12 @@ class ModuleListFragment : Fragment(), MyAdapterClickListener {
     override fun onItemClicked(position: Int, moduleId: String?) {
         courseReaderCallback?.moveTo(position, moduleId)
         courseReaderViewModel?.moduleId = moduleId
+    }
+
+    private fun obtainViewModel(activity: FragmentActivity?): CourseReaderViewModel? {
+        // Use a Factory to inject dependencies into the ViewModel
+
+        val factory = activity?.application?.let { ViewModelFactory.getInstance(it) }
+        return activity?.let { ViewModelProviders.of(it, factory).get(CourseReaderViewModel::class.java) }
     }
 }

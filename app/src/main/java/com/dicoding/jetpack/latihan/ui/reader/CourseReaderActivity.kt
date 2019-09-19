@@ -3,6 +3,7 @@ package com.dicoding.jetpack.latihan.ui.reader
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
 import com.dicoding.jetpack.latihan.R
@@ -10,6 +11,7 @@ import com.dicoding.jetpack.latihan.ui.reader.content.ModuleContentFragment
 import com.dicoding.jetpack.latihan.ui.reader.list.ModuleListFragment
 import com.dicoding.jetpack.latihan.ui.reader.view.CourseReaderCallback
 import com.dicoding.jetpack.latihan.ui.reader.viewmodel.CourseReaderViewModel
+import com.dicoding.jetpack.latihan.viewmodel.ViewModelFactory
 
 class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
 
@@ -23,7 +25,7 @@ class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_course_reader)
 
-        courseReaderViewModel = ViewModelProviders.of(this).get(CourseReaderViewModel::class.java)
+        courseReaderViewModel = obtainViewModel(this)
 
         val bundle = intent.extras
         if (bundle != null) {
@@ -59,5 +61,12 @@ class CourseReaderActivity : AppCompatActivity(), CourseReaderCallback {
         } else {
             super.onBackPressed()
         }
+    }
+
+    private fun obtainViewModel(activity: FragmentActivity): CourseReaderViewModel? {
+        // Use a Factory to inject dependencies into the ViewModel
+
+        val factory = ViewModelFactory.getInstance(activity.application)
+        return ViewModelProviders.of(activity, factory).get(CourseReaderViewModel::class.java)
     }
 }

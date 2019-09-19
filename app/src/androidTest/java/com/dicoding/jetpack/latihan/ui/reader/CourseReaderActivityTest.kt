@@ -11,15 +11,14 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.dicoding.jetpack.latihan.R
-import com.dicoding.jetpack.latihan.utils.FakeDataDummy
+import com.dicoding.jetpack.latihan.utils.FakeDataDummyInstrumentTest
 import com.dicoding.jetpack.latihan.utils.RecyclerViewItemCountAssertion
-import kotlinx.android.synthetic.main.fragment_module_list.*
 import org.junit.Rule
 import org.junit.Test
 
 class CourseReaderActivityTest {
 
-    private val dummyCourse = FakeDataDummy.generateDummyCourses()[0]
+    private val dummyCourse = FakeDataDummyInstrumentTest.generateDummyCourses()[0]
 
     @Rule
     @JvmField

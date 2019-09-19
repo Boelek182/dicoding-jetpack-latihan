@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.jetpack.latihan.R
@@ -13,6 +14,7 @@ import com.dicoding.jetpack.latihan.data.CourseEntity
 import com.dicoding.jetpack.latihan.ui.bookmart.adapter.BookmarkAdapter
 import com.dicoding.jetpack.latihan.ui.bookmart.view.BookmarkFragmentCallback
 import com.dicoding.jetpack.latihan.ui.bookmart.viewmodel.BookmarkViewModel
+import com.dicoding.jetpack.latihan.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_bookmark.*
 
 class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
@@ -34,7 +36,7 @@ class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
         super.onActivityCreated(savedInstanceState)
 
         if (activity != null) {
-            bookmarkViewModel = ViewModelProviders.of(this).get(BookmarkViewModel::class.java)
+            bookmarkViewModel = obtainViewModel(activity)
 
             bookmarkAdapter = bookmarkViewModel?.getBookmarks()?.let { BookmarkAdapter(activity, this, it) }
             rvBookmark.layoutManager = LinearLayoutManager(activity)
@@ -53,5 +55,11 @@ class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
                     .setText(String.format("Segera daftar kelas %s di dicoding.com", course?.title))
                     .startChooser()
         }
+    }
+
+    private fun obtainViewModel(activity: FragmentActivity?): BookmarkViewModel? {
+        // Use a Factory to inject dependencies into the ViewModel
+        val factory = activity?.application?.let { ViewModelFactory.getInstance(it) }
+        return activity?.let { ViewModelProviders.of(it, factory).get(BookmarkViewModel::class.java) }
     }
 }

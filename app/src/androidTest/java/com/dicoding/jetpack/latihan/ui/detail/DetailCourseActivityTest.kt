@@ -7,7 +7,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.dicoding.jetpack.latihan.R
-import com.dicoding.jetpack.latihan.utils.FakeDataDummy.generateDummyCourses
+import com.dicoding.jetpack.latihan.utils.FakeDataDummyInstrumentTest.generateDummyCourses
 import com.dicoding.jetpack.latihan.utils.RecyclerViewItemCountAssertion
 import org.junit.Rule
 import org.junit.Test

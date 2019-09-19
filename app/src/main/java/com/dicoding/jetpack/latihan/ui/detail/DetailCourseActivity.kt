@@ -13,7 +13,7 @@ import com.dicoding.jetpack.latihan.data.CourseEntity
 import com.dicoding.jetpack.latihan.ui.detail.adapter.DetailCourseAdapter
 import com.dicoding.jetpack.latihan.ui.detail.viewmodel.DetailCourseViewModel
 import com.dicoding.jetpack.latihan.ui.reader.CourseReaderActivity
-import kotlinx.android.synthetic.main.activity_detail_course.*
+import com.dicoding.jetpack.latihan.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.content_detail_course.*
 
 class DetailCourseActivity : AppCompatActivity() {
@@ -29,7 +29,7 @@ class DetailCourseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_course)
 
-        detailCourseViewModel = ViewModelProviders.of(this).get(DetailCourseViewModel()::class.java)
+        detailCourseViewModel = obtainViewModel(this)
 
         val extras = intent.extras
         if (extras != null) {
@@ -69,6 +69,13 @@ class DetailCourseActivity : AppCompatActivity() {
             intent.putExtra(CourseReaderActivity.EXTRA_COURSE_ID, detailCourseViewModel?.courseId)
             it.context.startActivity(intent)
         }
+    }
+
+    private fun obtainViewModel(activity: AppCompatActivity): DetailCourseViewModel? {
+        // Use a Factory to inject dependencies into the ViewModel
+
+        val factory = ViewModelFactory.getInstance(activity.application)
+        return ViewModelProviders.of(activity, factory).get(DetailCourseViewModel::class.java)
     }
 
     /*private fun populateCourse(courseId: String) {

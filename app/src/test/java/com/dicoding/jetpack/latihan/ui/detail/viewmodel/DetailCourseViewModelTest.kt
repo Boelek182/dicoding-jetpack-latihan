@@ -1,43 +1,46 @@
 package com.dicoding.jetpack.latihan.ui.detail.viewmodel
 
 import com.dicoding.jetpack.latihan.data.CourseEntity
+import com.dicoding.jetpack.latihan.data.ModuleEntity
+import com.dicoding.jetpack.latihan.data.source.AcademyRepository
+import com.dicoding.jetpack.latihan.utils.FakeDataDummyUnitTest.generateDummyCourses
+import com.dicoding.jetpack.latihan.utils.FakeDataDummyUnitTest.generateDummyModules
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.*
 
 
 class DetailCourseViewModelTest {
 
     private var detailCourseViewModel: DetailCourseViewModel? = null
-    private var dummyCourse: CourseEntity? = null
+    private val academyRepository: AcademyRepository = mock(AcademyRepository::class.java)
+    private val dummyCourse = generateDummyCourses()[0]
+    private val courseId = dummyCourse.courseId
 
     @Before
     fun setUp() {
-        detailCourseViewModel = DetailCourseViewModel()
-        dummyCourse = CourseEntity("a14",
-                "Menjadi Android Developer Expert",
-                "Dicoding sebagai satu-satunya Google Authorized Training Partner di Indonesia telah melalui proses penyusunan kurikulum secara komprehensif. Semua modul telah diverifikasi langsung oleh Google untuk memastikan bahwa materi yang diajarkan relevan dan sesuai dengan kebutuhan industri digital saat ini. Peserta akan belajar membangun aplikasi Android dengan materi Testing, Debugging, Application, Application UX, Fundamental Application Components, Persistent Data Storage, dan Enhanced System Integration.",
-                "100 Hari",
-                false,
-                "https://www.dicoding.com/images/small/academy/menjadi_android_developer_expert_logo_070119140352.jpg")
+        detailCourseViewModel = DetailCourseViewModel(academyRepository)
+        detailCourseViewModel?.courseId = courseId
     }
 
     @Test
     fun getCourse() {
-        detailCourseViewModel?.courseId = dummyCourse?.courseId
+        `when`(academyRepository.getCourseWithModules(courseId)).thenReturn(dummyCourse)
         val courseEntity: CourseEntity? = detailCourseViewModel?.getCourse()
+        verify(academyRepository).getCourseWithModules(courseId)
         assertNotNull(courseEntity)
-        assertEquals(dummyCourse?.courseId, courseEntity?.courseId)
-        assertEquals(dummyCourse?.deadline, courseEntity?.deadline)
-        assertEquals(dummyCourse?.description, courseEntity?.description)
-        assertEquals(dummyCourse?.imagePath, courseEntity?.imagePath)
-        assertEquals(dummyCourse?.title, courseEntity?.title)
+        val courseId = courseEntity?.courseId
+        assertNotNull(courseId)
+        assertEquals(dummyCourse.courseId, courseId)
     }
 
     @Test
     fun getModules() {
+        `when`<List<ModuleEntity>>(academyRepository.getAllModulesByCourse(courseId)).thenReturn(generateDummyModules(courseId))
         val moduleEntities = detailCourseViewModel?.getModules()
+        verify(academyRepository).getAllModulesByCourse(courseId)
         assertNotNull(moduleEntities)
         assertEquals(7, moduleEntities?.size)
     }
