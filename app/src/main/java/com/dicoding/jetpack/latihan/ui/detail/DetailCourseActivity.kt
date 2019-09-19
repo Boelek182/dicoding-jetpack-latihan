@@ -28,9 +28,6 @@ class DetailCourseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_course)
-        setSupportActionBar(toolbar)
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         detailCourseViewModel = ViewModelProviders.of(this).get(DetailCourseViewModel()::class.java)
 
