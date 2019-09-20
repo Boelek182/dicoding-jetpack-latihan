@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.jetpack.latihan.R
@@ -35,7 +36,13 @@ class AcademyFragment : Fragment() {
         if (activity != null) {
             academyViewModel = obtainViewModel(activity)
 
-            academyAdapter = academyViewModel?.getCourses()?.let { AcademyAdapter(activity, it) }
+            academyAdapter = AcademyAdapter(activity, null)
+
+            academyViewModel?.getCourses()?.observe(this, Observer {
+                progressBarAcademy.visibility = View.GONE
+                academyAdapter?.mCourses = it
+                academyAdapter?.notifyDataSetChanged()
+            })
             rvAcademy.layoutManager = LinearLayoutManager(activity)
             rvAcademy.setHasFixedSize(true)
             rvAcademy.adapter = academyAdapter

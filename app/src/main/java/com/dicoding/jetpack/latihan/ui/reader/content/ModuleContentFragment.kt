@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dicoding.jetpack.latihan.R
 import com.dicoding.jetpack.latihan.data.ModuleEntity
@@ -32,8 +33,12 @@ class ModuleContentFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         if (activity != null) {
+            progressBarModuleContent.visibility = View.VISIBLE
             courseReaderViewModel = obtainViewModel(activity)
-            populateWebView(courseReaderViewModel?.getSelectedModule())
+            courseReaderViewModel?.getSelectedModule()?.observe(this, Observer {
+                progressBarModuleContent.visibility = View.GONE
+                populateWebView(it)
+            })
         }
     }
 

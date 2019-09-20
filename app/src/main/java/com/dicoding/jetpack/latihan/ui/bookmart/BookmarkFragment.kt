@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.jetpack.latihan.R
@@ -38,7 +39,14 @@ class BookmarkFragment : Fragment(), BookmarkFragmentCallback {
         if (activity != null) {
             bookmarkViewModel = obtainViewModel(activity)
 
-            bookmarkAdapter = bookmarkViewModel?.getBookmarks()?.let { BookmarkAdapter(activity, this, it) }
+            bookmarkAdapter = BookmarkAdapter(activity, this, null)
+
+            bookmarkViewModel?.getBookmarks()?.observe(this, Observer {
+                progressBarBookMark.visibility = View.GONE
+                bookmarkAdapter?.mCourses = it
+                bookmarkAdapter?.notifyDataSetChanged()
+            })
+
             rvBookmark.layoutManager = LinearLayoutManager(activity)
             rvBookmark.setHasFixedSize(true)
             rvBookmark.adapter = bookmarkAdapter

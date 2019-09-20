@@ -8,17 +8,17 @@ import com.dicoding.jetpack.latihan.R
 import com.dicoding.jetpack.latihan.data.ModuleEntity
 import kotlinx.android.synthetic.main.items_module_list.view.*
 
-class DetailCourseAdapter(private val mModules: MutableList<ModuleEntity>) : RecyclerView.Adapter<DetailCourseAdapter.ModuleViewHolder>() {
+class DetailCourseAdapter(var mModules: MutableList<ModuleEntity>?) : RecyclerView.Adapter<DetailCourseAdapter.ModuleViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ModuleViewHolder {
         val view: View = LayoutInflater.from(parent.context).inflate(R.layout.items_module_list, parent, false)
         return ModuleViewHolder(view)
     }
 
-    override fun getItemCount(): Int = mModules.size
+    override fun getItemCount(): Int = mModules?.size ?: 0
 
     override fun onBindViewHolder(holder: ModuleViewHolder, position: Int) {
-        holder.bind(mModules[position].mTitle)
+        holder.bind(mModules?.get(position)?.mTitle)
     }
 
     class ModuleViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {

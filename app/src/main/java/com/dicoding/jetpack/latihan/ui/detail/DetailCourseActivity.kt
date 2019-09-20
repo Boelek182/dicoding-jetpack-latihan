@@ -2,7 +2,9 @@ package com.dicoding.jetpack.latihan.ui.detail
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,20 +33,29 @@ class DetailCourseActivity : AppCompatActivity() {
 
         detailCourseViewModel = obtainViewModel(this)
 
+        detailCourseAdapter = DetailCourseAdapter(null)
+
         val extras = intent.extras
         if (extras != null) {
             val courseId = extras.getString(EXTRA_COURSE)
             if (courseId != null) {
+                progressBarDetailCourse.visibility = View.VISIBLE
                 detailCourseViewModel?.courseId = courseId
-                detailCourseAdapter = detailCourseViewModel?.getModules()?.let { DetailCourseAdapter(it) }
-
                 //populateCourse(courseId)
             }
         }
 
-        if (detailCourseViewModel?.getCourse() != null) {
-            populateCourse(detailCourseViewModel?.getCourse())
-        }
+        detailCourseViewModel?.getModules()?.observe(this, Observer {
+            progressBarDetailCourse.visibility = View.GONE
+            detailCourseAdapter?.mModules = it
+            detailCourseAdapter?.notifyDataSetChanged()
+        })
+
+        detailCourseViewModel?.getCourse()?.observe(this, Observer {
+            if (it != null) {
+                populateCourse(it)
+            }
+        })
 
         rvModule.isNestedScrollingEnabled = false
         rvModule.layoutManager = LinearLayoutManager(this)
