@@ -33,12 +33,22 @@ class CourseReaderActivityTest {
 
     @Test
     fun loadModules() {
+        try {
+            Thread.sleep(3000L)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
         onView(withId(R.id.rvModuleList)).check(matches(isDisplayed()))
         onView(withId(R.id.rvModuleList)).check(RecyclerViewItemCountAssertion(7))
     }
 
     @Test
     fun clickModule() {
+        try {
+            Thread.sleep(3000L)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
         onView(withId(R.id.rvModuleList)).check(matches(isDisplayed()))
         onView(withId(R.id.rvModuleList)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
         onView(withId(R.id.webView)).check(matches(isDisplayed()))

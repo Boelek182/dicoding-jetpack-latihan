@@ -20,21 +20,56 @@ class AcademyTest {
 
     @Test
     fun toDetailActivityTest() {
+        try {
+            Thread.sleep(3000L)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
         onView(withId(R.id.rvAcademy)).check(matches(isDisplayed()))
         onView(withId(R.id.rvAcademy)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+
+        try {
+            Thread.sleep(3000L)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
         onView(withId(R.id.textTitle)).check(matches(isDisplayed()))
         onView(withId(R.id.textTitle)).check(matches(withText("Menjadi Android Developer Expert")))
     }
 
     @Test
     fun toReaderActivityTest() {
+        try {
+            Thread.sleep(3000L)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
         onView(withId(R.id.rvAcademy)).check(matches(isDisplayed()))
         onView(withId(R.id.rvAcademy)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+
+        try {
+            Thread.sleep(3000L)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
         onView(withId(R.id.btnStart)).check(matches(isDisplayed()))
         onView(withId(R.id.btnStart)).perform(click())
+
         onView(withId(R.id.frameContainer)).check(matches(isDisplayed()))
+
+        try {
+            Thread.sleep(3000L)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
         onView(withId(R.id.rvModuleList)).check(matches(isDisplayed()))
         onView(withId(R.id.rvModuleList)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+
+        try {
+            Thread.sleep(3000L)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
         onView(withId(R.id.webView)).check(matches(isDisplayed()))
     }
 }

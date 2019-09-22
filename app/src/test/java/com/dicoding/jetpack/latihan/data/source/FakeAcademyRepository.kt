@@ -1,97 +1,156 @@
 package com.dicoding.jetpack.latihan.data.source
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.dicoding.jetpack.latihan.data.ContentEntity
 import com.dicoding.jetpack.latihan.data.CourseEntity
 import com.dicoding.jetpack.latihan.data.ModuleEntity
 import com.dicoding.jetpack.latihan.data.source.remote.RemoteRepository
+import com.dicoding.jetpack.latihan.data.source.remote.response.ContentResponse
+import com.dicoding.jetpack.latihan.data.source.remote.response.CourseResponse
+import com.dicoding.jetpack.latihan.data.source.remote.response.ModuleResponse
+import com.dicoding.jetpack.latihan.data.source.remote.view.GetContentCallback
+import com.dicoding.jetpack.latihan.data.source.remote.view.LoadCoursesCallback
+import com.dicoding.jetpack.latihan.data.source.remote.view.LoadModulesCallback
 
 class FakeAcademyRepository(private val remoteRepository: RemoteRepository?) : AcademyDataSource {
 
-    override fun getAllCourses(): MutableList<CourseEntity> {
-        val courseResponses = remoteRepository?.getAllCourses()
-        val courseList = ArrayList<CourseEntity>()
-        if (courseResponses != null) {
-            for (i in courseResponses.indices) {
-                val response = courseResponses[i]
-                val course = CourseEntity(response.id,
-                        response.title,
-                        response.description,
-                        response.date,
-                        false,
-                        response.imagePath)
-                courseList.add(course)
+    override fun getAllCourses(): LiveData<MutableList<CourseEntity>?> {
+        val courseResults = MutableLiveData<MutableList<CourseEntity>>()
+
+        remoteRepository?.getAllCourses(object : LoadCoursesCallback {
+            override fun onAllCoursesReceived(courseResponses: List<CourseResponse>?) {
+                val courseList = ArrayList<CourseEntity>()
+                if (courseResponses != null) {
+                    for (element in courseResponses) {
+                        val (id, title, description, date, imagePath) = element
+                        val course = CourseEntity(id,
+                                title,
+                                description,
+                                date,
+                                false,
+                                imagePath)
+                        courseList.add(course)
+                    }
+                }
+                courseResults.postValue(courseList)
             }
-        }
-        return courseList
+
+            override fun onDataNotAvailable() {
+            }
+        })
+        return courseResults
     }
 
-    override fun getCourseWithModules(courseId: String?): CourseEntity? {
-        var course: CourseEntity? = null
-        val courses = remoteRepository?.getAllCourses()
-        if (courses != null) {
-            for (i in courses.indices) {
-                val (id, title, description, date, imagePath) = courses[i]
-                if (id == courseId) {
-                    course = CourseEntity(id,
-                            title,
-                            description,
-                            date,
-                            false,
-                            imagePath)
+    override fun getCourseWithModules(courseId: String?): LiveData<CourseEntity?> {
+        val courseResult = MutableLiveData<CourseEntity>()
+
+        remoteRepository?.getAllCourses(object : LoadCoursesCallback {
+            override fun onAllCoursesReceived(courseResponses: List<CourseResponse>?) {
+                if (courseResponses != null) {
+                    for (element in courseResponses) {
+                        val (id, title, description, date, imagePath) = element
+                        if (id == courseId) {
+                            val course = CourseEntity(id,
+                                    title,
+                                    description,
+                                    date,
+                                    false,
+                                    imagePath)
+                            courseResult.postValue(course)
+                        }
+                    }
                 }
             }
-        }
-        return course
-    }
 
-    override fun getAllModulesByCourse(courseId: String?): MutableList<ModuleEntity> {
-        val moduleList = ArrayList<ModuleEntity>()
-        val moduleResponses = remoteRepository?.getModules(courseId)
-        if (moduleResponses != null) {
-            for (i in moduleResponses.indices) {
-                val (moduleId, courseId1, title, position) = moduleResponses[i]
-                val course = ModuleEntity(moduleId,
-                        courseId1,
-                        title,
-                        position,
-                        false)
-                moduleList.add(course)
+            override fun onDataNotAvailable() {
             }
-        }
-        return moduleList
+        })
+        return courseResult
     }
 
-    override fun getBookmarkedCourses(): MutableList<CourseEntity> {
-        val courseList = ArrayList<CourseEntity>()
-        val courses = remoteRepository?.getAllCourses()
-        if (courses != null) {
-            for (i in courses.indices) {
-                val (id, title, description, date, imagePath) = courses[i]
-                val course = CourseEntity(id,
-                        title,
-                        description,
-                        date,
-                        false,
-                        imagePath)
-                courseList.add(course)
+    override fun getAllModulesByCourse(courseId: String?): LiveData<MutableList<ModuleEntity>?> {
+        val moduleResults = MutableLiveData<MutableList<ModuleEntity>>()
+
+        remoteRepository?.getModules(courseId, object : LoadModulesCallback {
+            override fun onAllModulesReceived(moduleResponses: List<ModuleResponse>?) {
+                val moduleList = ArrayList<ModuleEntity>()
+                if (moduleResponses != null) {
+                    for (element in moduleResponses) {
+                        val (moduleId, courseId1, title, position) = element
+                        val course = ModuleEntity(moduleId,
+                                courseId1,
+                                title,
+                                position,
+                                false)
+                        moduleList.add(course)
+                    }
+                }
+                moduleResults.postValue(moduleList)
             }
-        }
-        return courseList
+
+            override fun onDataNotAvailable() {
+            }
+        })
+        return moduleResults
     }
 
-    override fun getContent(courseId: String?, moduleId: String?): ModuleEntity? {
-        val moduleResponses = remoteRepository?.getModules(courseId)
-        var module: ModuleEntity? = null
-        if (moduleResponses != null) {
-            for (i in moduleResponses.indices) {
-                val (id, courseId1, title, position) = moduleResponses[i]
-                if (id == moduleId) {
-                    module = ModuleEntity(id, courseId1, title, position, false)
-                    module.contentEntity = ContentEntity(remoteRepository?.getContent(moduleId)?.content)
-                    break
+    override fun getBookmarkedCourses(): LiveData<MutableList<CourseEntity>?> {
+        val courseResults = MutableLiveData<MutableList<CourseEntity>>()
+
+        remoteRepository?.getAllCourses(object : LoadCoursesCallback {
+            override fun onAllCoursesReceived(courseResponses: List<CourseResponse>?) {
+                val courseList = ArrayList<CourseEntity>()
+                if (courseResponses != null) {
+                    for (element in courseResponses) {
+                        val (id, title, description, date, imagePath) = element
+                        val course = CourseEntity(id,
+                                title,
+                                description,
+                                date,
+                                false,
+                                imagePath)
+                        courseList.add(course)
+                    }
+                }
+                courseResults.postValue(courseList)
+            }
+
+            override fun onDataNotAvailable() {
+            }
+        })
+        return courseResults
+    }
+
+    override fun getContent(courseId: String?, moduleId: String?): LiveData<ModuleEntity?> {
+        val moduleResult = MutableLiveData<ModuleEntity>()
+
+        remoteRepository?.getModules(courseId, object : LoadModulesCallback {
+            override fun onAllModulesReceived(moduleResponses: List<ModuleResponse>?) {
+                val module: ModuleEntity
+                if (moduleResponses != null) {
+                    for (element in moduleResponses) {
+                        val (id, courseId1, title, position) = element
+                        if (id == moduleId) {
+                            module = ModuleEntity(id, courseId1, title, position, false)
+                            remoteRepository.getContent(moduleId, object : GetContentCallback {
+                                override fun onContentReceived(contentResponse: ContentResponse?) {
+                                    module.contentEntity = ContentEntity(contentResponse?.content)
+                                    moduleResult.postValue(module)
+                                }
+
+                                override fun onDataNotAvailable() {
+                                }
+                            })
+                            break
+                        }
+                    }
                 }
             }
-        }
-        return module
+
+            override fun onDataNotAvailable() {
+            }
+        })
+        return moduleResult
     }
 }

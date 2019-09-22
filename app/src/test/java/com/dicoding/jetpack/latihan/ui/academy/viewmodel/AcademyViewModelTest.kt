@@ -1,15 +1,21 @@
 package com.dicoding.jetpack.latihan.ui.academy.viewmodel
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.dicoding.jetpack.latihan.data.CourseEntity
 import com.dicoding.jetpack.latihan.data.source.AcademyRepository
 import com.dicoding.jetpack.latihan.utils.FakeDataDummyUnitTest.generateDummyCourses
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.*
 
 class AcademyViewModelTest {
+
+    @Rule
+    @JvmField
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private var academyViewModel: AcademyViewModel? = null
     private val academyRepository: AcademyRepository = mock(AcademyRepository::class.java)
@@ -21,10 +27,13 @@ class AcademyViewModelTest {
 
     @Test
     fun getCourses() {
-        `when`<List<CourseEntity>>(academyRepository.getAllCourses()).thenReturn(generateDummyCourses())
-        val courseEntities = academyViewModel?.getCourses()
-        verify(academyRepository).getAllCourses()
-        assertNotNull(courseEntities)
-        assertEquals(5, courseEntities?.size)
+        val dummyCourses = generateDummyCourses()
+        val courses = MutableLiveData<MutableList<CourseEntity>>()
+        courses.value = dummyCourses
+        `when`(academyRepository.getAllCourses()).thenReturn(courses)
+
+        val observer = mock(Observer::class.java) as Observer<MutableList<CourseEntity>?>
+        academyViewModel?.getCourses()?.observeForever(observer)
+        verify(observer).onChanged(dummyCourses)
     }
 }
