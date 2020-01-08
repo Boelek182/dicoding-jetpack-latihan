@@ -3,6 +3,7 @@ package com.dicoding.jetpack.latihan.ui.reader
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -11,8 +12,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.dicoding.jetpack.latihan.R
+import com.dicoding.jetpack.latihan.utils.EspressoIdlingResource.getEspressoIdlingResource
 import com.dicoding.jetpack.latihan.utils.FakeDataDummyInstrumentTest
 import com.dicoding.jetpack.latihan.utils.RecyclerViewItemCountAssertion
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -31,24 +35,24 @@ class CourseReaderActivityTest {
         }
     }
 
+    @Before
+    fun setUp() {
+        IdlingRegistry.getInstance().register(getEspressoIdlingResource())
+    }
+
+    @After
+    fun tearDown() {
+        IdlingRegistry.getInstance().unregister(getEspressoIdlingResource())
+    }
+
     @Test
     fun loadModules() {
-        try {
-            Thread.sleep(3000L)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
         onView(withId(R.id.rvModuleList)).check(matches(isDisplayed()))
         onView(withId(R.id.rvModuleList)).check(RecyclerViewItemCountAssertion(7))
     }
 
     @Test
     fun clickModule() {
-        try {
-            Thread.sleep(3000L)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
         onView(withId(R.id.rvModuleList)).check(matches(isDisplayed()))
         onView(withId(R.id.rvModuleList)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
         onView(withId(R.id.webView)).check(matches(isDisplayed()))

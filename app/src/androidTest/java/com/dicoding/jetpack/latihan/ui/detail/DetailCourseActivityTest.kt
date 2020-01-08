@@ -2,13 +2,17 @@ package com.dicoding.jetpack.latihan.ui.detail
 
 import android.content.Intent
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.dicoding.jetpack.latihan.R
+import com.dicoding.jetpack.latihan.utils.EspressoIdlingResource.getEspressoIdlingResource
 import com.dicoding.jetpack.latihan.utils.FakeDataDummyInstrumentTest.generateDummyCourses
 import com.dicoding.jetpack.latihan.utils.RecyclerViewItemCountAssertion
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,13 +31,18 @@ class DetailCourseActivityTest {
         }
     }
 
+    @Before
+    fun setUp() {
+        IdlingRegistry.getInstance().register(getEspressoIdlingResource())
+    }
+
+    @After
+    fun tearDown() {
+        IdlingRegistry.getInstance().unregister(getEspressoIdlingResource())
+    }
+
     @Test
     fun loadCourse() {
-        try {
-            Thread.sleep(3000L)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
         onView(withId(R.id.textTitle)).check(matches(isDisplayed()))
         onView(withId(R.id.textTitle)).check(matches(withText(dummyCourse.title)))
         onView(withId(R.id.textDate)).check(matches(isDisplayed()))
@@ -42,11 +51,6 @@ class DetailCourseActivityTest {
 
     @Test
     fun loadModules() {
-        try {
-            Thread.sleep(3000L)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
         onView(withId(R.id.rvModule)).check(matches(isDisplayed()))
         onView(withId(R.id.rvModule)).check(RecyclerViewItemCountAssertion(7))
     }
